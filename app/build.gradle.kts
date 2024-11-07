@@ -80,6 +80,9 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     // KotlinX Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+    // Coil
+    implementation("io.coil-kt.coil3:coil-compose:3.0.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0")
 }
 
 kapt {

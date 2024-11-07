@@ -25,6 +25,7 @@ fun SingleLineTextField(
     placeholder: String = "",
     isError: Boolean = false,
     isPassword: Boolean = false,
+    label: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions()
 ) {
@@ -39,6 +40,7 @@ fun SingleLineTextField(
             errorBorderColor = colorScheme.error,
             errorContainerColor = colorScheme.errorContainer,
             errorTextColor = colorScheme.onBackground,
+            errorLabelColor = colorScheme.error,
             focusedBorderColor = colorScheme.primary,
             cursorColor = colorScheme.primary,
             unfocusedBorderColor = Color.Transparent,
@@ -55,6 +57,7 @@ fun SingleLineTextField(
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         singleLine = true,
         trailingIcon = trailingIcon,
-        keyboardOptions = keyboardOptions
+        keyboardOptions = keyboardOptions,
+        label = label
     )
 }

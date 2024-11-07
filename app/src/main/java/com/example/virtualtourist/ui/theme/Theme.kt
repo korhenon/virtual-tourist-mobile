@@ -27,7 +27,9 @@ private val LightColorScheme = lightColorScheme(
     surface = IconsLight,
     onSurface = Placeholder,
     error = Error,
-    errorContainer = ErrorContainer
+    errorContainer = ErrorContainer,
+    onSecondaryContainer = TextLight,
+    tertiary = SecondaryVariant
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),

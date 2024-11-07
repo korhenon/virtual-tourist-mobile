@@ -1,4 +1,4 @@
-package com.example.virtualtourist.ui.screen.login
+package com.example.virtualtourist.ui.screen.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -6,10 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.virtualtourist.domain.AuthRepository
-import com.example.virtualtourist.domain.exceptions.BadRequest
-import com.example.virtualtourist.domain.exceptions.EmailIsNotValid
+import com.example.virtualtourist.domain.UserRepository
 import com.example.virtualtourist.domain.exceptions.NoInternet
+import com.example.virtualtourist.domain.exceptions.NotAuthorized
 import com.example.virtualtourist.ui.navigation.destinations.Home
 import com.example.virtualtourist.ui.navigation.destinations.Login
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,20 +16,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
-    private val repository: AuthRepository
+class HomeViewModel @Inject constructor(
+    private val repository: UserRepository
 ) : ViewModel() {
-    var state by mutableStateOf(LoginState())
-        private set
-
-    val canLogin get() = state.email.isNotEmpty() && state.password.isNotEmpty() && state.isEmailValid
-    fun updateEmail(value: String) {
-        state = state.copy(email = value, isEmailValid = true)
-    }
-
-    fun updatePassword(value: String) {
-        state = state.copy(password = value)
-    }
+    var state by mutableStateOf(HomeState())
 
     private fun setLoading(value: Boolean) {
         state = state.copy(connection = state.connection.copy(loading = value))
@@ -44,24 +33,26 @@ class LoginViewModel @Inject constructor(
         setNoInternet(false)
     }
 
-    fun login(navController: NavController) {
+    fun init(navController: NavController) {
+        refresh(navController)
+    }
+
+    fun refresh(navController: NavController) {
         viewModelScope.launch {
             setLoading(true)
             try {
-                repository.login(state.email, state.password)
-                navController.navigate(Home){
-                    popUpTo<Login> {
+                state = state.copy(routes = repository.getRecommendations())
+            } catch (_: NotAuthorized) {
+                navController.navigate(Login) {
+                    popUpTo<Home> {
                         inclusive = true
                     }
                 }
-            } catch (_: EmailIsNotValid) {
-                state = state.copy(isEmailValid = false)
-            } catch (e: BadRequest) {
-                state = state.copy(error = e.message ?: "")
             } catch (_: NoInternet) {
                 setNoInternet(true)
             }
             setLoading(false)
         }
     }
+
 }

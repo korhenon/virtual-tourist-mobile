@@ -25,9 +25,12 @@ import androidx.navigation.NavController
 import com.example.virtualtourist.ui.navigation.destinations.Login
 import com.example.virtualtourist.ui.navigation.destinations.Registration
 import com.example.virtualtourist.ui.theme.inter
+import com.example.virtualtourist.ui.widgets.EmailField
 import com.example.virtualtourist.ui.widgets.MaxWidthButton
-import com.example.virtualtourist.ui.widgets.PasswordTextField
+import com.example.virtualtourist.ui.widgets.NoInternetDialog
+import com.example.virtualtourist.ui.widgets.PasswordField
 import com.example.virtualtourist.ui.widgets.SingleLineTextField
+import com.example.virtualtourist.ui.widgets.Spinner
 
 @Composable
 fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltViewModel()) {
@@ -52,21 +55,29 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 color = colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(80.dp))
-            SingleLineTextField(
+            EmailField(
                 value = viewModel.state.email,
                 onValueChanged = viewModel::updateEmail,
-                placeholder = "Почта"
+                isEmailValid = viewModel.state.isEmailValid
             )
             Spacer(modifier = Modifier.height(32.dp))
-            PasswordTextField(
+            PasswordField(
                 value = viewModel.state.password,
                 onValueChanged = viewModel::updatePassword
+            )
+            Text(
+                text = viewModel.state.error,
+                color = colorScheme.error,
+                fontWeight = FontWeight.Medium,
+                fontFamily = inter,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(4.dp)
             )
         }
         Column {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                MaxWidthButton(text = "Войти") {
-
+                MaxWidthButton(text = "Войти", enabled = viewModel.canLogin) {
+                    viewModel.login(navController)
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
@@ -88,4 +99,6 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
             }
         }
     }
+    Spinner(loading = viewModel.state.connection.loading)
+    NoInternetDialog(noInternet = viewModel.state.connection.noInternet) { viewModel.closeNoInternet() }
 }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
@@ -22,7 +21,6 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
@@ -33,9 +31,12 @@ import androidx.navigation.NavController
 import com.example.virtualtourist.ui.navigation.destinations.Login
 import com.example.virtualtourist.ui.navigation.destinations.Registration
 import com.example.virtualtourist.ui.theme.inter
+import com.example.virtualtourist.ui.widgets.EmailField
 import com.example.virtualtourist.ui.widgets.MaxWidthButton
-import com.example.virtualtourist.ui.widgets.PasswordTextField
+import com.example.virtualtourist.ui.widgets.NoInternetDialog
+import com.example.virtualtourist.ui.widgets.PasswordField
 import com.example.virtualtourist.ui.widgets.SingleLineTextField
+import com.example.virtualtourist.ui.widgets.Spinner
 
 @Composable
 fun RegistrationScreen(
@@ -70,16 +71,23 @@ fun RegistrationScreen(
                 placeholder = "Имя"
             )
             Spacer(modifier = Modifier.height(32.dp))
-            SingleLineTextField(
+            EmailField(
                 value = viewModel.state.email,
                 onValueChanged = viewModel::updateEmail,
-                placeholder = "Почта",
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                isEmailValid = viewModel.state.isEmailValid
             )
             Spacer(modifier = Modifier.height(32.dp))
-            PasswordTextField(
+            PasswordField(
                 value = viewModel.state.password,
                 onValueChanged = viewModel::updatePassword
+            )
+            Text(
+                text = viewModel.state.error,
+                color = colorScheme.error,
+                fontWeight = FontWeight.Medium,
+                fontFamily = inter,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(4.dp)
             )
         }
         Column {
@@ -114,7 +122,8 @@ fun RegistrationScreen(
                 Text(
                     text = "Принять",
                     modifier = Modifier.clickable {
-
+                        viewModel.registration(navController)
+                        isPrivacyAlert = false
                     })
             },
             dismissButton = {
@@ -140,7 +149,8 @@ fun RegistrationScreen(
             containerColor = colorScheme.background,
             textContentColor = colorScheme.onBackground,
             titleContentColor = colorScheme.onBackground
-
         )
     }
+    Spinner(loading = viewModel.state.connection.loading)
+    NoInternetDialog(noInternet = viewModel.state.connection.noInternet) { viewModel.closeNoInternet() }
 }

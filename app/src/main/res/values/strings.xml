@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">VirtualTourist</string>
+    <string name="sp_name">VRT_SP</string>
+    <string name="sp_key_token">TOKEN</string>
 </resources>

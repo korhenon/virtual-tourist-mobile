@@ -1,5 +1,6 @@
 package com.example.virtualtourist.ui.widgets
 
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -8,10 +9,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import com.example.virtualtourist.R
 
 @Composable
-fun PasswordTextField(
+fun PasswordField(
     value: String,
     onValueChanged: (String) -> Unit
 ) {
@@ -29,6 +31,7 @@ fun PasswordTextField(
         onValueChanged = onValueChanged,
         trailingIcon = if (value.isNotEmpty()) icon else null,
         isPassword = isPassword,
-        placeholder = "Пароль"
+        placeholder = "Пароль",
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
     )
 }
