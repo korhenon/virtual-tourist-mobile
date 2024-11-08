@@ -1,7 +1,9 @@
 package com.example.virtualtourist.data.sources.network
 
 import com.example.virtualtourist.data.sources.network.model.LoginBody
+import com.example.virtualtourist.data.sources.network.model.MessageResponse
 import com.example.virtualtourist.data.sources.network.model.RegistrationBody
+import com.example.virtualtourist.data.sources.network.model.SubscribeBody
 import com.example.virtualtourist.data.sources.network.model.TokenResponse
 import com.example.virtualtourist.data.sources.network.model.UserRoutesResponse
 import com.example.virtualtourist.data.utils.BASE_URL
@@ -33,4 +35,10 @@ interface RetrofitService {
 
     @GET("/user/recommendations")
     suspend fun getRecommendations(@Header("token") token: String): UserRoutesResponse
+
+    @POST("/user/subscribe")
+    suspend fun subscribe(@Header("token") token: String, @Body body: SubscribeBody): MessageResponse
+
+    @POST("/user/unsubscribe")
+    suspend fun unsubscribe(@Header("token") token: String, @Body body: SubscribeBody): MessageResponse
 }

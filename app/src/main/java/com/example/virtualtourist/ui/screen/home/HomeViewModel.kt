@@ -12,7 +12,9 @@ import com.example.virtualtourist.domain.exceptions.NotAuthorized
 import com.example.virtualtourist.ui.navigation.destinations.Home
 import com.example.virtualtourist.ui.navigation.destinations.Login
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,21 +39,43 @@ class HomeViewModel @Inject constructor(
         refresh(navController)
     }
 
+    private fun notAuthorized(navController: NavController) {
+        navController.navigate(Login) {
+            popUpTo<Home> {
+                inclusive = true
+            }
+        }
+    }
+
     fun refresh(navController: NavController) {
         viewModelScope.launch {
             setLoading(true)
             try {
                 state = state.copy(routes = repository.getRecommendations())
             } catch (_: NotAuthorized) {
-                navController.navigate(Login) {
-                    popUpTo<Home> {
-                        inclusive = true
-                    }
-                }
+                notAuthorized(navController)
             } catch (_: NoInternet) {
                 setNoInternet(true)
             }
             setLoading(false)
+        }
+    }
+
+    fun toggleSubscription(navController: NavController, id: Int, value: Boolean) {
+        viewModelScope.launch {
+            try {
+                repository.toggleSubscription(id, value)
+                withContext(Dispatchers.IO) {
+                    state = state.copy(routes = state.routes.map {
+                        if (it.author.id == id) it.copy(author = it.author.copy(isSubscribe = !value))
+                        else it
+                    })
+                }
+            } catch (_: NotAuthorized) {
+                notAuthorized(navController)
+            } catch (_: NoInternet) {
+                setNoInternet(true)
+            }
         }
     }
 

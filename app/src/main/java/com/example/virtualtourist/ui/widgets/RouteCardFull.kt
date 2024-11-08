@@ -2,14 +2,14 @@ package com.example.virtualtourist.ui.widgets
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,15 +17,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -34,27 +33,27 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
-import coil3.compose.rememberConstraintsSizeResolver
-import coil3.request.ImageRequest
 import com.example.virtualtourist.R
-import com.example.virtualtourist.data.sources.network.model.UserRoute
+import com.example.virtualtourist.ui.dto.RouteCompact
 import com.example.virtualtourist.ui.theme.ShadingElements
 import com.example.virtualtourist.ui.theme.inter
-import com.example.virtualtourist.ui.utils.buildPhotoUrl
-import com.example.virtualtourist.ui.utils.timeString
 
 @Composable
 fun RouteCardFull(
-    route: UserRoute,
-    toggleSubscription: (Int, Boolean) -> Unit,
+    route: RouteCompact,
+    toggleSubscription: () -> Unit,
     onClick: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
+    ) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomStart) {
             Image(
-                painter = rememberAsyncImagePainter(route.buildPhotoUrl()),
+                painter = rememberAsyncImagePainter(route.photo),
                 contentDescription = "Фото: ${route.name}",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -66,9 +65,9 @@ fun RouteCardFull(
                 Text(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(fontWeight = FontWeight.Medium)) {
-                            append("${route.price} ₽")
+                            append(route.price)
                         }
-                        append(" за ${route.timeString()}")
+                        append(" за ${route.time}")
                     },
                     fontFamily = inter,
                     color = colorScheme.background,
@@ -90,7 +89,7 @@ fun RouteCardFull(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = route.mean_mark.toString(),
+                        text = route.meanMark.toString(),
                         fontFamily = inter,
                         color = colorScheme.background,
                         fontWeight = FontWeight.Medium,
@@ -127,7 +126,7 @@ fun RouteCardFull(
                         modifier = Modifier.weight(1f)
                     ) {
                         Image(
-                            painter = rememberAsyncImagePainter(route.author.buildPhotoUrl()),
+                            painter = rememberAsyncImagePainter(route.author.photo),
                             contentDescription = "Фото автора: ${route.author.name}",
                             modifier = Modifier
                                 .size(36.dp)
@@ -148,7 +147,7 @@ fun RouteCardFull(
                                 lineHeight = 12.sp
                             )
                             Text(
-                                text = route.author.subscribers_count.toString(),
+                                text = route.author.subscribersInfo,
                                 fontFamily = inter,
                                 color = colorScheme.onSurface,
                                 fontSize = 12.sp,
@@ -157,8 +156,8 @@ fun RouteCardFull(
                         }
                     }
                     Spacer(modifier = Modifier.width(12.dp))
-                    SubscribeButtonCompact(isSubscribed = route.author.is_subscribe, onClick = {
-                        toggleSubscription(route.author.id, it)
+                    SubscribeButtonCompact(isSubscribed = route.author.isSubscribe, onClick = {
+                        toggleSubscription()
                     }, variant = SubscribeButtonCompactVariant.Secondary)
                 }
                 Spacer(modifier = Modifier.height(8.dp))

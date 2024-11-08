@@ -8,7 +8,5 @@ data class UserRoute(
     val name: String,
     val photo: Int,
     val price: Int,
-    val start_latitude: Double,
-    val start_longitude: Double,
     val time: Int
 )

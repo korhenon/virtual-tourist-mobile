@@ -23,13 +23,13 @@ enum class SubscribeButtonCompactVariant {
 @Composable
 fun SubscribeButtonCompact(
     isSubscribed: Boolean,
-    onClick: (Boolean) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     variant: SubscribeButtonCompactVariant = SubscribeButtonCompactVariant.Primary,
 ) {
     if (!isSubscribed) {
         Button(
-            onClick = { onClick(true) },
+            onClick = onClick,
             shape = RoundedCornerShape(8.dp),
             contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
             colors = ButtonDefaults.buttonColors(
@@ -45,7 +45,7 @@ fun SubscribeButtonCompact(
         }
     } else {
         OutlinedButton(
-            onClick = { onClick(false) },
+            onClick = onClick,
             shape = RoundedCornerShape(8.dp),
             contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
             colors = ButtonDefaults.outlinedButtonColors(

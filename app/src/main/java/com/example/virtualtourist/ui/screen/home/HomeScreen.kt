@@ -92,7 +92,9 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                     Image(
                         painter = painterResource(id = R.drawable.logo_small),
                         contentDescription = "Маленький логотип",
-                        Modifier.height(32.dp).padding(bottom=2.dp)
+                        Modifier
+                            .height(32.dp)
+                            .padding(bottom = 2.dp)
                     )
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
@@ -128,7 +130,15 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
             }
             LazyColumn(modifier = Modifier.padding(horizontal = 20.dp), state = lazyListState) {
                 items(viewModel.state.routes) {
-                    RouteCardFull(route = it, toggleSubscription = { i, v -> }, onClick = {})
+                    RouteCardFull(route = it, toggleSubscription = {
+                        viewModel.toggleSubscription(
+                            navController,
+                            it.author.id,
+                            it.author.isSubscribe
+                        )
+                    }, onClick = {
+                        navController.navigate(it.toDestination())
+                    })
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
